@@ -2586,6 +2586,14 @@ bam <- function(formula,family=gaussian(),data=list(),weights=NULL,subset=NULL,n
     else G$w<-mf$"(weights)"    
 
     G$y <- mf[[gp$response]]
+
+    if (is.factor(G$y) && isTRUE(G$family$family %in% c("multinom", "Ordered Categorical"))) {
+      G$y <- as.integer(G$y)
+      if (G$family$family == "multinom") {
+        G$y <- G$y - min(G$y, na.rm = TRUE)
+      }
+    }
+
     ## now get offset, dealing with possibility of multiple predictors (see gam.setup)
     ## the point is that G$offset relates to the compressed or discretized model frame,
     ## so we need to correct it to the full data version...
